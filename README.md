@@ -1,6 +1,6 @@
 # API Management Platform
 
-> A production-grade mini Postman + Kong dashboard — built as a senior-level portfolio project.
+> A production-grade mini Postman + Kong dashboard.
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.4-blue?logo=typescript)](https://www.typescriptlang.org/)
 [![Next.js](https://img.shields.io/badge/Next.js-14-black?logo=next.js)](https://nextjs.org/)
