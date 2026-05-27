@@ -1,0 +1,262 @@
+// This is your Prisma schema file
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Auth & Users ────────────────────────────────────────────────────────────
+
+model User {
+  id           String         @id @default(uuid())
+  email        String         @unique
+  password     String
+  name         String
+  role         UserRole       @default(DEVELOPER)
+  isActive     Boolean        @default(true)
+  refreshTokens RefreshToken[]
+  projects     Project[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  @@map("users")
+}
+
+enum UserRole {
+  ADMIN
+  DEVELOPER
+  VIEWER
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  isRevoked Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+// ─── Projects ────────────────────────────────────────────────────────────────
+
+model Project {
+  id            String         @id @default(uuid())
+  name          String
+  baseUrl       String
+  environment   Environment    @default(DEVELOPMENT)
+  description   String?
+  ownerId       String
+  owner         User           @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  apiKeys       ApiKey[]
+  requestLogs   RequestLog[]
+  rateLimitRule RateLimitRule?
+  jwtConfig     JwtConfig?
+  oauthClients  OAuthClient[]
+  mockEndpoints MockEndpoint[]
+  webhooks      Webhook[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@index([ownerId])
+  @@map("projects")
+}
+
+enum Environment {
+  PRODUCTION
+  STAGING
+  DEVELOPMENT
+}
+
+// ─── API Keys ────────────────────────────────────────────────────────────────
+
+model ApiKey {
+  id          String       @id @default(uuid())
+  name        String
+  keyHash     String       @unique
+  keyPrefix   String       // First 8 chars shown in UI (e.g. "amp_live_")
+  projectId   String
+  project     Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  isRevoked   Boolean      @default(false)
+  expiresAt   DateTime?
+  lastUsedAt  DateTime?
+  requestLogs RequestLog[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([projectId])
+  @@index([keyHash])
+  @@map("api_keys")
+}
+
+// ─── Request Logs ─────────────────────────────────────────────────────────────
+
+model RequestLog {
+  id           String   @id @default(uuid())
+  projectId    String
+  project      Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  apiKeyId     String?
+  apiKey       ApiKey?  @relation(fields: [apiKeyId], references: [id], onDelete: SetNull)
+  method       String
+  path         String
+  statusCode   Int
+  responseTime Int      // milliseconds
+  ipAddress    String
+  userAgent    String?
+  errorMessage String?
+  requestBody  Json?
+  responseBody Json?
+  timestamp    DateTime @default(now())
+
+  @@index([projectId])
+  @@index([apiKeyId])
+  @@index([timestamp])
+  @@index([statusCode])
+  @@map("request_logs")
+}
+
+// ─── Rate Limit Rules ─────────────────────────────────────────────────────────
+
+model RateLimitRule {
+  id        String   @id @default(uuid())
+  projectId String   @unique
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  perMinute Int      @default(60)
+  perHour   Int      @default(1000)
+  perDay    Int      @default(10000)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("rate_limit_rules")
+}
+
+// ─── JWT Validation Config ────────────────────────────────────────────────────
+
+model JwtConfig {
+  id          String    @id @default(uuid())
+  projectId   String    @unique
+  project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  issuer      String?
+  audience    String?
+  secret      String    // encrypted at application level
+  algorithm   Algorithm @default(HS256)
+  validateExp Boolean   @default(true)
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("jwt_configs")
+}
+
+enum Algorithm {
+  HS256
+  HS384
+  HS512
+  RS256
+  RS384
+  RS512
+}
+
+// ─── OAuth Clients ────────────────────────────────────────────────────────────
+
+model OAuthClient {
+  id                 String   @id @default(uuid())
+  projectId          String
+  project            Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  name               String
+  clientId           String   @unique
+  clientSecretHash   String
+  clientSecretPrefix String   // partial display
+  redirectUrls       String[]
+  scopes             String[]
+  isRevoked          Boolean  @default(false)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([projectId])
+  @@index([clientId])
+  @@map("oauth_clients")
+}
+
+// ─── Mock Endpoints ───────────────────────────────────────────────────────────
+
+model MockEndpoint {
+  id           String   @id @default(uuid())
+  projectId    String
+  project      Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  name         String
+  method       HttpMethod
+  path         String
+  responseBody Json
+  statusCode   Int      @default(200)
+  delay        Int      @default(0) // ms
+  headers      Json?
+  isActive     Boolean  @default(true)
+  hitCount     Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([projectId])
+  @@map("mock_endpoints")
+}
+
+enum HttpMethod {
+  GET
+  POST
+  PUT
+  PATCH
+  DELETE
+  OPTIONS
+  HEAD
+}
+
+// ─── Webhooks ─────────────────────────────────────────────────────────────────
+
+model Webhook {
+  id            String              @id @default(uuid())
+  projectId     String
+  project       Project             @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  name          String
+  url           String
+  eventType     WebhookEvent
+  secretHash    String
+  secretPrefix  String
+  isActive      Boolean             @default(true)
+  deliveryLogs  WebhookDeliveryLog[]
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+
+  @@index([projectId])
+  @@map("webhooks")
+}
+
+enum WebhookEvent {
+  API_KEY_USED
+  RATE_LIMIT_EXCEEDED
+  GATEWAY_REQUEST_FAILED
+  MOCK_ENDPOINT_CALLED
+}
+
+model WebhookDeliveryLog {
+  id         String   @id @default(uuid())
+  webhookId  String
+  webhook    Webhook  @relation(fields: [webhookId], references: [id], onDelete: Cascade)
+  eventType  String
+  payload    Json
+  statusCode Int?
+  response   String?
+  success    Boolean
+  attempt    Int      @default(1)
+  duration   Int?     // ms
+  createdAt  DateTime @default(now())
+
+  @@index([webhookId])
+  @@map("webhook_delivery_logs")
+}

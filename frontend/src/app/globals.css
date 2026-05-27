@@ -1,0 +1,58 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+@layer base {
+  :root {
+    --font-inter: 'Inter', system-ui, sans-serif;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: #d1d5db;
+    border-radius: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: #9ca3af;
+  }
+}
+
+@layer components {
+  .table-row-hover {
+    @apply hover:bg-gray-50 transition-colors;
+  }
+
+  .form-section {
+    @apply bg-white rounded-xl border border-gray-200 p-6 shadow-card space-y-5;
+  }
+
+  .code-block {
+    @apply font-mono text-sm bg-gray-950 text-gray-100 rounded-lg p-4 overflow-x-auto;
+  }
+
+  .key-display {
+    @apply font-mono text-xs bg-gray-100 text-gray-700 rounded px-2 py-1 select-all;
+  }
+}
