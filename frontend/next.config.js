@@ -1,6 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'standalone',
+  // 'standalone' is only needed for Docker/self-hosted deployments.
+  // Vercel uses its own build runner — omitting this lets all routes deploy correctly.
+  ...(process.env.DOCKER_BUILD === 'true' && { output: 'standalone' }),
   experimental: {
     typedRoutes: false,
   },
