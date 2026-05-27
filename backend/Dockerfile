@@ -49,6 +49,10 @@ RUN npm install --only=production && npm cache clean --force
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/node_modules/@prisma/client ./node_modules/@prisma/client
 
+# Copy and permission the startup script (must happen as root, before USER switch)
+COPY start.sh ./start.sh
+RUN chmod +x start.sh
+
 # Create logs directory owned by app user
 RUN mkdir -p logs && chown appuser:appgroup logs
 
@@ -59,4 +63,4 @@ EXPOSE 4000
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
   CMD wget -qO- http://localhost:4000/api/health || exit 1
 
-CMD ["node", "dist/server.js"]
+CMD ["sh", "start.sh"]

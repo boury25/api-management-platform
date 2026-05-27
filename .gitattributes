@@ -1,0 +1,5 @@
+# Force shell scripts to LF on all platforms (CRLF breaks sh/bash on Linux)
+*.sh text eol=lf
+
+# Normal text files — auto
+* text=auto

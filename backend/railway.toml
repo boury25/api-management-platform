@@ -2,9 +2,8 @@
 dockerfilePath = "Dockerfile"
 
 [deploy]
-releaseCommand = "node_modules/.bin/prisma db push --accept-data-loss && node dist-seed/prisma/seed/index.js"
-startCommand = "node dist/server.js"
+startCommand = "sh start.sh"
 healthcheckPath = "/api/health"
-healthcheckTimeout = 60
+healthcheckTimeout = 300
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 3

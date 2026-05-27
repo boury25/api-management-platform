@@ -168,29 +168,34 @@ async function main() {
 
   console.log('✅ Sample webhook created');
 
-  // ─── Create Sample Request Logs ───────────────────────────────────────────────
-  const methods = ['GET', 'POST', 'PUT', 'DELETE'];
-  const paths = ['/users', '/products', '/orders', '/health', '/categories'];
-  const statuses = [200, 200, 200, 201, 400, 404, 500, 200, 200, 201];
+  // ─── Create Sample Request Logs (only on first seed) ────────────────────────
+  const existingLogCount = await prisma.requestLog.count({ where: { projectId: project.id } });
 
-  for (let i = 0; i < 50; i++) {
-    const date = new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000);
-    await prisma.requestLog.create({
-      data: {
-        projectId: project.id,
-        apiKeyId: apiKey.id,
-        method: methods[Math.floor(Math.random() * methods.length)],
-        path: paths[Math.floor(Math.random() * paths.length)],
-        statusCode: statuses[Math.floor(Math.random() * statuses.length)],
-        responseTime: Math.floor(Math.random() * 500) + 50,
-        ipAddress: `192.168.1.${Math.floor(Math.random() * 255)}`,
-        userAgent: 'Mozilla/5.0 (compatible; SeedClient/1.0)',
-        timestamp: date,
-      },
-    });
+  if (existingLogCount === 0) {
+    const methods = ['GET', 'POST', 'PUT', 'DELETE'];
+    const paths = ['/users', '/products', '/orders', '/health', '/categories'];
+    const statuses = [200, 200, 200, 201, 400, 404, 500, 200, 200, 201];
+
+    for (let i = 0; i < 50; i++) {
+      const date = new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000);
+      await prisma.requestLog.create({
+        data: {
+          projectId: project.id,
+          apiKeyId: apiKey.id,
+          method: methods[Math.floor(Math.random() * methods.length)],
+          path: paths[Math.floor(Math.random() * paths.length)],
+          statusCode: statuses[Math.floor(Math.random() * statuses.length)],
+          responseTime: Math.floor(Math.random() * 500) + 50,
+          ipAddress: `192.168.1.${Math.floor(Math.random() * 255)}`,
+          userAgent: 'Mozilla/5.0 (compatible; SeedClient/1.0)',
+          timestamp: date,
+        },
+      });
+    }
+    console.log('✅ Sample request logs created: 50');
+  } else {
+    console.log(`ℹ️  Skipping logs — ${existingLogCount} already exist`);
   }
-
-  console.log('✅ Sample request logs created: 50');
 
   console.log('\n🎉 Seed completed successfully!');
   console.log('\n📋 Test credentials:');
