@@ -6,19 +6,26 @@ let redisClient: Redis | null = null;
 
 export function getRedisClient(): Redis {
   if (!redisClient) {
-    redisClient = new Redis({
-      host: config.redis.host,
-      port: config.redis.port,
-      password: config.redis.password,
-      db: config.redis.db,
-      retryStrategy: (times: number) => {
-        const delay = Math.min(times * 50, 2000);
-        return delay;
-      },
+    // Railway (and other PaaS) provide REDIS_URL as a full connection string.
+    // Fall back to individual host/port/password for local Docker Compose.
+    const redisUrl = process.env.REDIS_URL;
+
+    const baseOptions = {
+      retryStrategy: (times: number) => Math.min(times * 50, 2000),
       maxRetriesPerRequest: 3,
       enableReadyCheck: true,
       lazyConnect: false,
-    });
+    };
+
+    redisClient = redisUrl
+      ? new Redis(redisUrl, baseOptions)
+      : new Redis({
+          host: config.redis.host,
+          port: config.redis.port,
+          password: config.redis.password,
+          db: config.redis.db,
+          ...baseOptions,
+        });
 
     redisClient.on('connect', () => {
       logger.info('✅ Redis connected');
