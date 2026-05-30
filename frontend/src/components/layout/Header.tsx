@@ -1,16 +1,17 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Bell, Search } from 'lucide-react';
+import { Bell, Search, Menu } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
 import { CommandPalette } from '@/components/ui/CommandPalette';
 
 interface HeaderProps {
   title: string;
   subtitle?: string;
+  onMenuClick: () => void;
 }
 
-export function Header({ title, subtitle }: HeaderProps) {
+export function Header({ title, subtitle, onMenuClick }: HeaderProps) {
   const { user } = useAuthStore();
   const [paletteOpen, setPaletteOpen] = useState(false);
 
@@ -30,14 +31,30 @@ export function Header({ title, subtitle }: HeaderProps) {
     <>
       <CommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} />
 
-      <header className="bg-white border-b border-gray-200 px-8 py-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-xl font-bold text-gray-900">{title}</h1>
-            {subtitle && <p className="text-sm text-gray-500 mt-0.5">{subtitle}</p>}
+      <header className="bg-white border-b border-gray-200 px-4 sm:px-8 py-4 sticky top-0 z-20">
+        <div className="flex items-center justify-between gap-3">
+
+          {/* Left: hamburger (mobile) + title */}
+          <div className="flex items-center gap-3 min-w-0">
+            <button
+              onClick={onMenuClick}
+              className="lg:hidden p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors shrink-0"
+              aria-label="Open menu"
+            >
+              <Menu size={20} />
+            </button>
+            <div className="min-w-0">
+              <h1 className="text-lg sm:text-xl font-bold text-gray-900 truncate">{title}</h1>
+              {subtitle && (
+                <p className="text-xs sm:text-sm text-gray-500 mt-0.5 truncate hidden sm:block">
+                  {subtitle}
+                </p>
+              )}
+            </div>
           </div>
 
-          <div className="flex items-center gap-4">
+          {/* Right: search + bell + avatar */}
+          <div className="flex items-center gap-2 sm:gap-4 shrink-0">
             {/* Search trigger */}
             <button
               onClick={() => setPaletteOpen(true)}
@@ -50,6 +67,15 @@ export function Header({ title, subtitle }: HeaderProps) {
               </kbd>
             </button>
 
+            {/* Search icon only on small screens */}
+            <button
+              onClick={() => setPaletteOpen(true)}
+              className="md:hidden p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+              aria-label="Search"
+            >
+              <Search size={18} />
+            </button>
+
             {/* Notifications */}
             <button className="relative p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
               <Bell size={18} />
@@ -58,7 +84,7 @@ export function Header({ title, subtitle }: HeaderProps) {
 
             {/* Avatar */}
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center shrink-0">
                 <span className="text-white text-xs font-bold uppercase">
                   {user?.name?.charAt(0) || 'U'}
                 </span>
@@ -69,6 +95,7 @@ export function Header({ title, subtitle }: HeaderProps) {
               </div>
             </div>
           </div>
+
         </div>
       </header>
     </>

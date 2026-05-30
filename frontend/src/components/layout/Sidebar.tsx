@@ -18,6 +18,7 @@ import {
   Zap,
   ChevronRight,
   FlaskConical,
+  X,
 } from 'lucide-react';
 
 const navigation = [
@@ -33,7 +34,12 @@ const navigation = [
   { name: 'Settings',      href: '/settings',    icon: Settings },
 ];
 
-export function Sidebar() {
+interface SidebarProps {
+  open: boolean;
+  onClose: () => void;
+}
+
+export function Sidebar({ open, onClose }: SidebarProps) {
   const pathname = usePathname();
   const { user, logout } = useAuthStore();
 
@@ -43,16 +49,68 @@ export function Sidebar() {
   };
 
   return (
-    <aside className="fixed inset-y-0 left-0 z-40 w-64 flex flex-col bg-gray-950 border-r border-gray-800">
+    <>
+      {/* ── Desktop: always-visible fixed sidebar ── */}
+      <aside className="hidden lg:flex fixed inset-y-0 left-0 z-40 w-64 flex-col bg-gray-950 border-r border-gray-800">
+        <SidebarContent
+          pathname={pathname}
+          user={user}
+          onLogout={handleLogout}
+          showClose={false}
+          onClose={onClose}
+        />
+      </aside>
+
+      {/* ── Mobile / tablet: slide-in drawer ── */}
+      <aside
+        className={cn(
+          'lg:hidden fixed inset-y-0 left-0 z-40 w-72 flex flex-col bg-gray-950 border-r border-gray-800',
+          'transition-transform duration-300 ease-in-out',
+          open ? 'translate-x-0' : '-translate-x-full',
+        )}
+      >
+        <SidebarContent
+          pathname={pathname}
+          user={user}
+          onLogout={handleLogout}
+          showClose
+          onClose={onClose}
+        />
+      </aside>
+    </>
+  );
+}
+
+// ── Shared inner content ──────────────────────────────────────────────────────
+
+interface ContentProps {
+  pathname: string;
+  user: { name?: string; role?: string } | null;
+  onLogout: () => void;
+  showClose: boolean;
+  onClose: () => void;
+}
+
+function SidebarContent({ pathname, user, onLogout, showClose, onClose }: ContentProps) {
+  return (
+    <>
       {/* Logo */}
       <div className="flex items-center gap-3 px-6 py-5 border-b border-gray-800">
         <div className="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center shrink-0">
           <Zap size={16} className="text-white" />
         </div>
-        <div>
+        <div className="flex-1">
           <p className="text-white font-bold text-sm leading-none">API Platform</p>
           <p className="text-gray-400 text-xs mt-0.5">Management Dashboard</p>
         </div>
+        {showClose && (
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-white transition-colors p-1 rounded-lg hover:bg-gray-800"
+          >
+            <X size={18} />
+          </button>
+        )}
       </div>
 
       {/* Navigation */}
@@ -63,6 +121,7 @@ export function Sidebar() {
             <Link
               key={item.name}
               href={item.href}
+              onClick={onClose}
               className={cn(
                 'group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
                 isActive
@@ -98,13 +157,13 @@ export function Sidebar() {
           </div>
         </div>
         <button
-          onClick={handleLogout}
+          onClick={onLogout}
           className="mt-1 w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800 transition-colors text-sm font-medium"
         >
           <LogOut size={18} className="shrink-0" />
           Sign out
         </button>
       </div>
-    </aside>
+    </>
   );
 }

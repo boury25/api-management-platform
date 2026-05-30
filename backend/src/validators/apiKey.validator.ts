@@ -5,7 +5,7 @@ export const createApiKeyValidator = [
     .trim()
     .isLength({ min: 2, max: 100 })
     .withMessage('API key name must be between 2 and 100 characters'),
-  body('projectId').isUUID().withMessage('Invalid project ID'),
+  body('projectId').isString().trim().notEmpty().withMessage('Invalid project ID'),
   body('expiresAt')
     .optional()
     .isISO8601()
