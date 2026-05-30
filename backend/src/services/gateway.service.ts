@@ -241,6 +241,13 @@ export class GatewayService {
     delete axiosConfig.headers?.['x-api-key'];
     delete axiosConfig.headers?.['content-length'];
 
+    // Force uncompressed responses from upstream.
+    // Node's http module can handle gzip but not brotli natively; if we
+    // forward the browser's 'accept-encoding: gzip, br' the upstream may
+    // return brotli-compressed bytes that arrive as garbled binary data.
+    // 'identity' asks for no compression at all, keeping the body clean.
+    axiosConfig.headers!['accept-encoding'] = 'identity';
+
     const response = await axios(axiosConfig);
     const responseTime = Date.now() - startTime;
 
