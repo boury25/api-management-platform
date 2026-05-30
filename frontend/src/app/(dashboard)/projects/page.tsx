@@ -138,8 +138,8 @@ export default function ProjectsPage() {
                 <span>{formatDate(project.createdAt)}</span>
               </div>
 
-              {/* Actions */}
-              <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+              {/* Actions — always visible on touch devices, hover-reveal on pointer devices */}
+              <div className="flex items-center gap-2 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                 <Button
                   size="sm"
                   variant="secondary"

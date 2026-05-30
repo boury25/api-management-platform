@@ -65,11 +65,11 @@ export default function OAuthPage() {
 
   return (
     <DashboardLayout title="OAuth Clients" subtitle="Manage OAuth 2.0 client applications">
-      <div className="flex items-center gap-3 mb-6">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mb-6">
         <select
           value={selectedProjectId}
           onChange={(e) => setSelectedProjectId(e.target.value)}
-          className="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none"
+          className="w-full sm:w-auto px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none"
         >
           <option value="">Select project...</option>
           {projects.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
@@ -113,7 +113,7 @@ export default function OAuthPage() {
                       {client.isRevoked ? 'revoked' : 'active'}
                     </Badge>
                   </div>
-                  <div className="grid grid-cols-2 gap-3 text-xs mt-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs mt-2">
                     <div>
                       <p className="text-gray-400 mb-0.5">Client ID</p>
                       <code className="key-display">{client.clientId}</code>
@@ -212,7 +212,7 @@ export default function OAuthPage() {
             <AlertTriangle className="text-amber-600 shrink-0 mt-0.5" size={16} />
             <p className="text-amber-800 text-sm">Store this secret securely. Use it to authenticate OAuth flows.</p>
           </div>
-          <div className="grid grid-cols-2 gap-3 text-xs">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
             <div>
               <p className="text-gray-500 mb-1">Client ID</p>
               <code className="key-display block">{newClientData?.clientId}</code>

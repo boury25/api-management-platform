@@ -44,12 +44,12 @@ export default function AnalyticsPage() {
 
   return (
     <DashboardLayout title="Analytics" subtitle="Deep insights into your API traffic and performance">
-      {/* Filters */}
-      <div className="flex items-center gap-3 mb-6">
+      {/* Filters — stack on mobile */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mb-6">
         <select
           value={selectedProjectId}
           onChange={(e) => setSelectedProjectId(e.target.value)}
-          className="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none"
+          className="w-full sm:w-auto px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none"
         >
           <option value="">Select project...</option>
           {projects.map((p) => (
@@ -57,7 +57,7 @@ export default function AnalyticsPage() {
           ))}
         </select>
 
-        <div className="flex items-center bg-white border border-gray-200 rounded-lg p-1">
+        <div className="flex items-center bg-white border border-gray-200 rounded-lg p-1 self-start sm:self-auto">
           {[
             { label: '24h', value: '1d' },
             { label: '7d', value: '7d' },
@@ -87,7 +87,7 @@ export default function AnalyticsPage() {
         </Card>
       ) : isLoading ? (
         <div className="space-y-5 animate-pulse">
-          <div className="grid grid-cols-4 gap-5">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-5">
             {[...Array(4)].map((_, i) => (
               <div key={i} className="h-32 bg-gray-100 rounded-xl" />
             ))}

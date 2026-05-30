@@ -69,11 +69,11 @@ export default function WebhooksPage() {
 
   return (
     <DashboardLayout title="Webhooks" subtitle="Configure webhooks to receive real-time event notifications">
-      <div className="flex items-center gap-3 mb-6">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mb-6">
         <select
           value={selectedProjectId}
           onChange={(e) => setSelectedProjectId(e.target.value)}
-          className="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none"
+          className="flex-1 sm:flex-none px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none"
         >
           <option value="">Select project...</option>
           {projects.map((p) => (
@@ -111,9 +111,10 @@ export default function WebhooksPage() {
         <div className="space-y-3">
           {webhookList.map((webhook) => (
             <Card key={webhook.id} className={`${!webhook.isActive ? 'opacity-60' : ''}`}>
-              <div className="flex items-center gap-4">
+              <div className="flex items-start sm:items-center gap-4">
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
+                  {/* Badges wrap on small screens */}
+                  <div className="flex items-center flex-wrap gap-2 mb-1">
                     <span className="font-semibold text-gray-900 text-sm">{webhook.name}</span>
                     <Badge variant={webhook.isActive ? 'success' : 'default'} dot>
                       {webhook.isActive ? 'active' : 'paused'}
@@ -121,10 +122,10 @@ export default function WebhooksPage() {
                     <Badge variant="purple">{EVENT_LABELS[webhook.eventType]}</Badge>
                   </div>
                   <p className="text-xs font-mono text-gray-500 truncate">{webhook.url}</p>
-                  <p className="text-xs text-gray-400 mt-1">
-                    Secret: <code className="key-display">{webhook.secretPrefix}...</code>
-                    {' · '}Created {formatDate(webhook.createdAt)}
-                    {' · '}{webhook._count?.deliveryLogs || 0} deliveries
+                  <p className="text-xs text-gray-400 mt-1 flex flex-wrap gap-x-1">
+                    <span>Secret: <code className="key-display">{webhook.secretPrefix}...</code></span>
+                    <span>· Created {formatDate(webhook.createdAt)}</span>
+                    <span>· {webhook._count?.deliveryLogs || 0} deliveries</span>
                   </p>
                 </div>
 

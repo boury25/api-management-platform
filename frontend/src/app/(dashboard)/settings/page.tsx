@@ -66,21 +66,19 @@ export default function SettingsPage() {
             <h3 className="text-base font-semibold text-gray-900">Profile</h3>
           </div>
           <div className="space-y-4">
-            <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
-              <div className="w-12 h-12 rounded-full bg-brand-600 flex items-center justify-center">
+            <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg flex-wrap">
+              <div className="w-12 h-12 rounded-full bg-brand-600 flex items-center justify-center shrink-0">
                 <span className="text-white font-bold text-lg uppercase">
                   {user?.name?.charAt(0)}
                 </span>
               </div>
-              <div>
-                <p className="font-semibold text-gray-900">{user?.name}</p>
-                <p className="text-sm text-gray-500">{user?.email}</p>
+              <div className="flex-1 min-w-0">
+                <p className="font-semibold text-gray-900 truncate">{user?.name}</p>
+                <p className="text-sm text-gray-500 truncate">{user?.email}</p>
               </div>
-              <div className="ml-auto">
-                <Badge variant={user?.role === 'ADMIN' ? 'purple' : user?.role === 'DEVELOPER' ? 'info' : 'default'}>
-                  {user?.role?.toLowerCase()}
-                </Badge>
-              </div>
+              <Badge variant={user?.role === 'ADMIN' ? 'purple' : user?.role === 'DEVELOPER' ? 'info' : 'default'}>
+                {user?.role?.toLowerCase()}
+              </Badge>
             </div>
           </div>
         </Card>
@@ -141,13 +139,13 @@ export default function SettingsPage() {
         <Card>
           <h3 className="text-base font-semibold text-gray-900 mb-4">API Information</h3>
           <div className="space-y-3 text-sm">
-            <div className="flex justify-between py-2 border-b border-gray-100">
+            <div className="flex flex-col sm:flex-row sm:justify-between gap-1 py-2 border-b border-gray-100">
               <span className="text-gray-500">API Base URL</span>
-              <code className="text-gray-700 font-mono">
+              <code className="text-gray-700 font-mono text-sm break-all">
                 {process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'}/api
               </code>
             </div>
-            <div className="flex justify-between py-2 border-b border-gray-100">
+            <div className="flex flex-col sm:flex-row sm:justify-between gap-1 py-2 border-b border-gray-100">
               <span className="text-gray-500">API Docs</span>
               <a
                 href={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'}/api/docs`}
@@ -158,13 +156,13 @@ export default function SettingsPage() {
                 /api/docs ↗
               </a>
             </div>
-            <div className="flex justify-between py-2 border-b border-gray-100">
+            <div className="flex flex-col sm:flex-row sm:justify-between gap-1 py-2 border-b border-gray-100">
               <span className="text-gray-500">Gateway URL</span>
-              <code className="text-gray-700 font-mono">/api/gateway/:projectId/*</code>
+              <code className="text-gray-700 font-mono text-sm break-all">/api/gateway/:projectId/*</code>
             </div>
-            <div className="flex justify-between py-2">
+            <div className="flex flex-col sm:flex-row sm:justify-between gap-1 py-2">
               <span className="text-gray-500">Mock Server URL</span>
-              <code className="text-gray-700 font-mono">/api/mocks/serve/:projectId/*</code>
+              <code className="text-gray-700 font-mono text-sm break-all">/api/mocks/serve/:projectId/*</code>
             </div>
           </div>
         </Card>

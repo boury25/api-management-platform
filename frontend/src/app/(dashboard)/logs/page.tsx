@@ -42,12 +42,12 @@ export default function LogsPage() {
 
   return (
     <DashboardLayout title="Request Logs" subtitle="Monitor and debug all gateway and API requests">
-      {/* Controls */}
-      <div className="flex flex-wrap items-center gap-3 mb-6">
+      {/* Controls — stack on mobile, wrap on tablet */}
+      <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-2 sm:gap-3 mb-6">
         <select
           value={selectedProjectId}
           onChange={(e) => setSelectedProjectId(e.target.value)}
-          className="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none"
+          className="w-full sm:w-auto px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none"
         >
           <option value="">Select project...</option>
           {projects.map((p) => (
@@ -63,14 +63,14 @@ export default function LogsPage() {
                 placeholder="Filter by path..."
                 value={filters.path}
                 onChange={(e) => setFilters({ ...filters, path: e.target.value, page: 1 })}
-                className="pl-8 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none"
+                className="w-full sm:w-auto pl-8 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none"
               />
             </div>
 
             <select
               value={filters.method}
               onChange={(e) => setFilters({ ...filters, method: e.target.value, page: 1 })}
-              className="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none"
+              className="w-full sm:w-auto px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none"
             >
               <option value="">All methods</option>
               {['GET', 'POST', 'PUT', 'PATCH', 'DELETE'].map((m) => (
@@ -81,7 +81,7 @@ export default function LogsPage() {
             <select
               value={filters.statusCode}
               onChange={(e) => setFilters({ ...filters, statusCode: e.target.value, page: 1 })}
-              className="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none"
+              className="w-full sm:w-auto px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none"
             >
               <option value="">All status codes</option>
               <option value="200">2xx Success</option>
@@ -122,9 +122,10 @@ export default function LogsPage() {
                   <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-4 py-3">Path</th>
                   <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-4 py-3">Status</th>
                   <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-4 py-3">Time</th>
-                  <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-4 py-3">API Key</th>
-                  <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-4 py-3">IP</th>
-                  <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-4 py-3">Timestamp</th>
+                  {/* Hidden on mobile */}
+                  <th className="hidden sm:table-cell text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-4 py-3">API Key</th>
+                  <th className="hidden md:table-cell text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-4 py-3">IP</th>
+                  <th className="hidden sm:table-cell text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-4 py-3">Timestamp</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
@@ -135,7 +136,7 @@ export default function LogsPage() {
                         {log.method}
                       </span>
                     </td>
-                    <td className="px-4 py-3 font-mono text-xs text-gray-700 max-w-xs truncate">
+                    <td className="px-4 py-3 font-mono text-xs text-gray-700 max-w-[140px] sm:max-w-xs truncate">
                       {log.path}
                       {log.errorMessage && (
                         <span className="ml-2 text-red-500 text-xs non-mono">⚠ {log.errorMessage}</span>
@@ -146,18 +147,18 @@ export default function LogsPage() {
                         {log.statusCode}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-gray-500 font-mono text-xs">
+                    <td className="px-4 py-3 text-gray-500 font-mono text-xs whitespace-nowrap">
                       {log.responseTime}ms
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="hidden sm:table-cell px-4 py-3">
                       {log.apiKey ? (
                         <code className="key-display text-xs">{log.apiKey.keyPrefix}...</code>
                       ) : (
                         <span className="text-gray-400 text-xs">—</span>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-gray-500 font-mono text-xs">{log.ipAddress}</td>
-                    <td className="px-4 py-3 text-gray-500 text-xs whitespace-nowrap">
+                    <td className="hidden md:table-cell px-4 py-3 text-gray-500 font-mono text-xs">{log.ipAddress}</td>
+                    <td className="hidden sm:table-cell px-4 py-3 text-gray-500 text-xs whitespace-nowrap">
                       {formatDateTime(log.timestamp)}
                     </td>
                   </tr>
@@ -168,9 +169,9 @@ export default function LogsPage() {
 
           {/* Pagination */}
           {meta && meta.totalPages > 1 && (
-            <div className="flex items-center justify-between px-4 py-3 border-t border-gray-100">
+            <div className="flex items-center justify-between px-4 py-3 border-t border-gray-100 flex-wrap gap-2">
               <p className="text-xs text-gray-500">
-                Showing {(meta.page - 1) * meta.limit + 1}–{Math.min(meta.page * meta.limit, meta.total)} of {meta.total.toLocaleString()}
+                {(meta.page - 1) * meta.limit + 1}–{Math.min(meta.page * meta.limit, meta.total)} of {meta.total.toLocaleString()}
               </p>
               <div className="flex items-center gap-1">
                 <button
@@ -178,9 +179,9 @@ export default function LogsPage() {
                   onClick={() => setFilters({ ...filters, page: filters.page - 1 })}
                   className="px-3 py-1.5 text-xs border border-gray-200 rounded-lg disabled:opacity-40 hover:bg-gray-50 transition-colors"
                 >
-                  Previous
+                  ← Prev
                 </button>
-                <span className="px-3 py-1.5 text-xs text-gray-500">
+                <span className="hidden sm:inline px-3 py-1.5 text-xs text-gray-500">
                   Page {meta.page} of {meta.totalPages}
                 </span>
                 <button
@@ -188,7 +189,7 @@ export default function LogsPage() {
                   onClick={() => setFilters({ ...filters, page: filters.page + 1 })}
                   className="px-3 py-1.5 text-xs border border-gray-200 rounded-lg disabled:opacity-40 hover:bg-gray-50 transition-colors"
                 >
-                  Next
+                  Next →
                 </button>
               </div>
             </div>

@@ -312,7 +312,7 @@ export default function PlaygroundPage() {
         {/* ════ RIGHT: Response ════ */}
         <div>
           {!response ? (
-            <Card className="flex flex-col items-center justify-center py-32 text-center">
+            <Card className="flex flex-col items-center justify-center py-16 xl:py-32 text-center">
               <FlaskConical className="text-gray-200 mb-4" size={52} />
               <p className="text-gray-400 text-sm">
                 Hit <span className="font-semibold">Send Request</span> to see the live response here
@@ -353,8 +353,8 @@ export default function PlaygroundPage() {
                   {response.headersOpen && (
                     <div className="px-5 pb-3 max-h-52 overflow-y-auto">
                       {Object.entries(response.headers).map(([k, v]) => (
-                        <div key={k} className="flex gap-4 py-0.5 text-xs font-mono">
-                          <span className="text-brand-600 shrink-0 w-44 truncate">{k}</span>
+                        <div key={k} className="flex gap-2 sm:gap-4 py-0.5 text-xs font-mono">
+                          <span className="text-brand-600 shrink-0 w-28 sm:w-44 truncate">{k}</span>
                           <span className="text-gray-600 break-all">{v}</span>
                         </div>
                       ))}

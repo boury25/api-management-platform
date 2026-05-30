@@ -85,11 +85,11 @@ export default function MocksPage() {
   return (
     <DashboardLayout title="Mock Server" subtitle="Create mock API endpoints for testing and development">
       {/* Controls */}
-      <div className="flex items-center gap-3 mb-6">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mb-6">
         <select
           value={selectedProjectId}
           onChange={(e) => setSelectedProjectId(e.target.value)}
-          className="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none"
+          className="w-full sm:w-auto px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none"
         >
           <option value="">Select project...</option>
           {projects.map((p) => (
@@ -205,7 +205,7 @@ export default function MocksPage() {
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
           />
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">Method</label>
               <select

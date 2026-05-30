@@ -81,9 +81,9 @@ export default function ApiKeysPage() {
 
   return (
     <DashboardLayout title="API Keys" subtitle="Manage API keys for your projects">
-      {/* Project Selector */}
-      <div className="flex items-center gap-4 mb-6">
-        <div className="flex-1 max-w-sm">
+      {/* Project Selector — stacks vertically on mobile */}
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-6">
+        <div className="sm:flex-1 sm:max-w-sm">
           <select
             value={selectedProjectId}
             onChange={(e) => setSelectedProjectId(e.target.value)}
@@ -133,70 +133,73 @@ export default function ApiKeysPage() {
         </Card>
       ) : (
         <Card padding="none">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-gray-100 bg-gray-50">
-                <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-6 py-3">Name</th>
-                <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-6 py-3">Key Prefix</th>
-                <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-6 py-3">Status</th>
-                <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-6 py-3">Last Used</th>
-                <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-6 py-3">Expires</th>
-                <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-6 py-3">Created</th>
-                <th className="px-6 py-3" />
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-50">
-              {keys.map((key) => (
-                <tr key={key.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-6 py-4 text-sm font-medium text-gray-900">{key.name}</td>
-                  <td className="px-6 py-4">
-                    <code className="key-display">{key.keyPrefix}...</code>
-                  </td>
-                  <td className="px-6 py-4">
-                    <Badge variant={key.isRevoked ? 'danger' : 'success'} dot>
-                      {key.isRevoked ? 'revoked' : 'active'}
-                    </Badge>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-500">
-                    {key.lastUsedAt ? formatRelativeTime(key.lastUsedAt) : 'Never'}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-500">
-                    {key.expiresAt ? formatDate(key.expiresAt) : '—'}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{formatDate(key.createdAt)}</td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-1.5">
-                      {!key.isRevoked && (
-                        <>
-                          <button
-                            onClick={() => rotateMutation.mutate(key.id)}
-                            title="Rotate key"
-                            className="p-1.5 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
-                          >
-                            <RotateCcw size={14} />
-                          </button>
-                          <button
-                            onClick={() => setRevokeId(key.id)}
-                            title="Revoke key"
-                            className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                          >
-                            <Ban size={14} />
-                          </button>
-                        </>
-                      )}
-                      <button
-                        onClick={() => setDeleteId(key.id)}
-                        title="Delete"
-                        className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                      >
-                        <Trash2 size={14} />
-                      </button>
-                    </div>
-                  </td>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-gray-100 bg-gray-50">
+                  <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-4 sm:px-6 py-3">Name</th>
+                  <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-4 sm:px-6 py-3">Key Prefix</th>
+                  <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-4 sm:px-6 py-3">Status</th>
+                  {/* Hidden on mobile — shown on sm+ */}
+                  <th className="hidden sm:table-cell text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-4 sm:px-6 py-3">Last Used</th>
+                  <th className="hidden md:table-cell text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-4 sm:px-6 py-3">Expires</th>
+                  <th className="hidden md:table-cell text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-4 sm:px-6 py-3">Created</th>
+                  <th className="px-4 sm:px-6 py-3" />
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {keys.map((key) => (
+                  <tr key={key.id} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-4 sm:px-6 py-4 text-sm font-medium text-gray-900 max-w-[120px] sm:max-w-none truncate">{key.name}</td>
+                    <td className="px-4 sm:px-6 py-4">
+                      <code className="key-display">{key.keyPrefix}...</code>
+                    </td>
+                    <td className="px-4 sm:px-6 py-4">
+                      <Badge variant={key.isRevoked ? 'danger' : 'success'} dot>
+                        {key.isRevoked ? 'revoked' : 'active'}
+                      </Badge>
+                    </td>
+                    <td className="hidden sm:table-cell px-4 sm:px-6 py-4 text-sm text-gray-500">
+                      {key.lastUsedAt ? formatRelativeTime(key.lastUsedAt) : 'Never'}
+                    </td>
+                    <td className="hidden md:table-cell px-4 sm:px-6 py-4 text-sm text-gray-500">
+                      {key.expiresAt ? formatDate(key.expiresAt) : '—'}
+                    </td>
+                    <td className="hidden md:table-cell px-4 sm:px-6 py-4 text-sm text-gray-500">{formatDate(key.createdAt)}</td>
+                    <td className="px-4 sm:px-6 py-4">
+                      <div className="flex items-center gap-1.5">
+                        {!key.isRevoked && (
+                          <>
+                            <button
+                              onClick={() => rotateMutation.mutate(key.id)}
+                              title="Rotate key"
+                              className="p-1.5 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
+                            >
+                              <RotateCcw size={14} />
+                            </button>
+                            <button
+                              onClick={() => setRevokeId(key.id)}
+                              title="Revoke key"
+                              className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            >
+                              <Ban size={14} />
+                            </button>
+                          </>
+                        )}
+                        <button
+                          onClick={() => setDeleteId(key.id)}
+                          title="Delete"
+                          className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </Card>
       )}
 

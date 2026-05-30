@@ -14,10 +14,10 @@ interface ModalProps {
 }
 
 const sizeStyles = {
-  sm: 'max-w-sm',
-  md: 'max-w-md',
-  lg: 'max-w-lg',
-  xl: 'max-w-2xl',
+  sm: 'sm:max-w-sm',
+  md: 'sm:max-w-md',
+  lg: 'sm:max-w-lg',
+  xl: 'sm:max-w-2xl',
 };
 
 export function Modal({ isOpen, onClose, title, description, children, size = 'md' }: ModalProps) {
@@ -43,20 +43,30 @@ export function Modal({ isOpen, onClose, title, description, children, size = 'm
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    // On mobile: panel slides up from the bottom edge.
+    // On sm+: panel is centred with padding on all sides.
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4">
+      {/* Backdrop */}
       <div
         ref={overlayRef}
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
         onClick={onClose}
       />
+
+      {/* Panel */}
       <div
         className={cn(
-          'relative bg-white rounded-2xl shadow-xl w-full animate-slide-in',
+          'relative bg-white w-full shadow-2xl animate-slide-in',
+          // Mobile: rounded only at the top (bottom-sheet style)
+          // sm+: fully rounded dialog
+          'rounded-t-2xl sm:rounded-2xl',
+          // Cap height so tall content scrolls rather than overflows the viewport
+          'max-h-[92vh] sm:max-h-[calc(100vh-2rem)] overflow-y-auto',
           sizeStyles[size],
         )}
       >
         {(title || description) && (
-          <div className="flex items-start justify-between p-6 border-b border-gray-100">
+          <div className="flex items-start justify-between p-4 sm:p-6 border-b border-gray-100">
             <div>
               {title && <h2 className="text-lg font-semibold text-gray-900">{title}</h2>}
               {description && (
@@ -65,13 +75,13 @@ export function Modal({ isOpen, onClose, title, description, children, size = 'm
             </div>
             <button
               onClick={onClose}
-              className="ml-4 p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+              className="ml-4 p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors shrink-0"
             >
               <X size={18} />
             </button>
           </div>
         )}
-        <div className="p-6">{children}</div>
+        <div className="p-4 sm:p-6">{children}</div>
       </div>
     </div>
   );
