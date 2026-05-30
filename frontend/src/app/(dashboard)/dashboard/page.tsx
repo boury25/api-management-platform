@@ -79,7 +79,7 @@ export default function DashboardPage() {
         <Card className="lg:col-span-2">
           <CardHeader>
             <CardTitle>Request Traffic (24h)</CardTitle>
-            <Link href="/dashboard/analytics" className="text-sm text-brand-600 hover:text-brand-700 font-medium">
+            <Link href="/analytics" className="text-sm text-brand-600 hover:text-brand-700 font-medium">
               Full analytics →
             </Link>
           </CardHeader>
@@ -134,7 +134,7 @@ export default function DashboardPage() {
           <div className="p-5 border-b border-gray-100">
             <div className="flex items-center justify-between">
               <CardTitle>Recent Requests</CardTitle>
-              <Link href="/dashboard/logs" className="text-sm text-brand-600 hover:text-brand-700 font-medium">
+              <Link href="/logs" className="text-sm text-brand-600 hover:text-brand-700 font-medium">
                 View all →
               </Link>
             </div>
@@ -166,7 +166,7 @@ export default function DashboardPage() {
           <div className="p-5 border-b border-gray-100">
             <div className="flex items-center justify-between">
               <CardTitle>Your Projects</CardTitle>
-              <Link href="/dashboard/projects" className="text-sm text-brand-600 hover:text-brand-700 font-medium">
+              <Link href="/projects" className="text-sm text-brand-600 hover:text-brand-700 font-medium">
                 Manage →
               </Link>
             </div>
@@ -176,7 +176,7 @@ export default function DashboardPage() {
               <div className="p-8 text-center">
                 <FolderOpen className="mx-auto text-gray-300 mb-2" size={32} />
                 <p className="text-gray-500 text-sm">No projects yet</p>
-                <Link href="/dashboard/projects" className="text-brand-600 text-sm font-medium mt-1 inline-block">
+                <Link href="/projects" className="text-brand-600 text-sm font-medium mt-1 inline-block">
                   Create your first project →
                 </Link>
               </div>
