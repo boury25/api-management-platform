@@ -92,8 +92,9 @@ export function errorHandler(
     return;
   }
 
-  // Unknown / programming errors
+  // Unknown / programming errors — log full details including error type for debugging
   logger.error('Unhandled error:', {
+    type: err.constructor?.name ?? err.name,
     message: err.message,
     stack: err.stack,
     url: req.url,

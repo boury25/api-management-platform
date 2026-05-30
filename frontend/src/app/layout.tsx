@@ -6,7 +6,10 @@ import { Providers } from './providers';
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
 export const metadata: Metadata = {
-  title: 'API Management Platform',
+  title: {
+    default: 'API Platform',
+    template: '%s · API Platform',
+  },
   description: 'Production-grade API Management Platform — manage API keys, rate limits, analytics, mock servers, and more.',
   keywords: ['API', 'Management', 'Gateway', 'Rate Limiting', 'Mock Server'],
 };

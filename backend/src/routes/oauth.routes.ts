@@ -10,7 +10,21 @@ router.use(authenticate);
 const createClientValidator = [
   body('name').trim().isLength({ min: 2, max: 100 }).withMessage('Name must be 2–100 characters'),
   body('redirectUrls').optional().isArray().withMessage('redirectUrls must be an array'),
-  body('redirectUrls.*').isURL().withMessage('Each redirect URL must be valid'),
+  // Use a custom validator instead of body('redirectUrls.*').isURL() — in
+  // express-validator v7 the bare wildcard form can throw when the array is
+  // absent or empty, producing an unhandled exception that becomes a 500.
+  body('redirectUrls')
+    .optional()
+    .custom((urls: unknown) => {
+      if (!Array.isArray(urls)) return true; // already caught above
+      for (const url of urls) {
+        if (typeof url !== 'string' || !/^https?:\/\/.+/.test(url)) {
+          throw new Error(`"${url}" is not a valid URL`);
+        }
+      }
+      return true;
+    })
+    .withMessage('Each redirect URL must be a valid http/https URL'),
   body('scopes').optional().isArray().withMessage('scopes must be an array'),
 ];
 
