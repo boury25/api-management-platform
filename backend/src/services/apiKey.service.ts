@@ -2,7 +2,7 @@ import { ApiKeyRepository } from '../repositories/apiKey.repository';
 import { ProjectRepository } from '../repositories/project.repository';
 import { generateApiKey, hashApiKey } from '../utils/crypto';
 import { NotFoundError, ForbiddenError, ConflictError } from '../middleware/errorHandler';
-import { Environment } from '@prisma/client';
+import { Environment, UserRole } from '@prisma/client';
 
 export class ApiKeyService {
   constructor(
@@ -15,11 +15,12 @@ export class ApiKeyService {
     name: string,
     userId: string,
     expiresAt?: Date,
+    userRole?: UserRole,
   ) {
     const project = await this.projectRepo.findById(projectId);
     if (!project) throw new NotFoundError('Project');
 
-    if (project.ownerId !== userId) {
+    if (project.ownerId !== userId && userRole !== UserRole.ADMIN) {
       throw new ForbiddenError('You do not own this project');
     }
 
@@ -46,18 +47,18 @@ export class ApiKeyService {
     return { apiKey, rawKey: key };
   }
 
-  async listByProject(projectId: string, userId: string, options: { skip: number; take: number }) {
+  async listByProject(projectId: string, userId: string, options: { skip: number; take: number }, userRole?: UserRole) {
     const project = await this.projectRepo.findById(projectId);
     if (!project) throw new NotFoundError('Project');
-    if (project.ownerId !== userId) throw new ForbiddenError('Access denied');
+    if (project.ownerId !== userId && userRole !== UserRole.ADMIN) throw new ForbiddenError('Access denied');
 
     return this.apiKeyRepo.findByProject(projectId, options);
   }
 
-  async revoke(keyId: string, userId: string) {
+  async revoke(keyId: string, userId: string, userRole?: UserRole) {
     const apiKey = await this.apiKeyRepo.findById(keyId);
     if (!apiKey) throw new NotFoundError('API Key');
-    if (apiKey.project.ownerId !== userId) throw new ForbiddenError('Access denied');
+    if (apiKey.project.ownerId !== userId && userRole !== UserRole.ADMIN) throw new ForbiddenError('Access denied');
 
     if (apiKey.isRevoked) {
       throw new ConflictError('API key is already revoked');
@@ -66,10 +67,10 @@ export class ApiKeyService {
     return this.apiKeyRepo.revoke(keyId);
   }
 
-  async rotate(keyId: string, userId: string, expiresAt?: Date) {
+  async rotate(keyId: string, userId: string, expiresAt?: Date, userRole?: UserRole) {
     const existing = await this.apiKeyRepo.findById(keyId);
     if (!existing) throw new NotFoundError('API Key');
-    if (existing.project.ownerId !== userId) throw new ForbiddenError('Access denied');
+    if (existing.project.ownerId !== userId && userRole !== UserRole.ADMIN) throw new ForbiddenError('Access denied');
 
     const project = await this.projectRepo.findById(existing.projectId);
     if (!project) throw new NotFoundError('Project');
@@ -99,10 +100,10 @@ export class ApiKeyService {
     return { apiKey: newApiKey, rawKey: key };
   }
 
-  async delete(keyId: string, userId: string): Promise<void> {
+  async delete(keyId: string, userId: string, userRole?: UserRole): Promise<void> {
     const apiKey = await this.apiKeyRepo.findById(keyId);
     if (!apiKey) throw new NotFoundError('API Key');
-    if (apiKey.project.ownerId !== userId) throw new ForbiddenError('Access denied');
+    if (apiKey.project.ownerId !== userId && userRole !== UserRole.ADMIN) throw new ForbiddenError('Access denied');
 
     await this.apiKeyRepo.delete(keyId);
   }

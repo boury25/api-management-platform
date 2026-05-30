@@ -16,6 +16,7 @@ export class ApiKeyController {
         name,
         req.user!.id,
         expiresAt ? new Date(expiresAt) : undefined,
+        req.user!.role,
       );
 
       // Only show full key on creation
@@ -37,7 +38,7 @@ export class ApiKeyController {
       const { keys, total } = await apiKeyService.listByProject(projectId, req.user!.id, {
         skip,
         take: limit,
-      });
+      }, req.user!.role);
 
       respond.success(res, keys, 'API keys retrieved', 200, buildPaginationMeta(total, page, limit));
     } catch (error) {
@@ -47,7 +48,7 @@ export class ApiKeyController {
 
   async revoke(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const apiKey = await apiKeyService.revoke(req.params.keyId, req.user!.id);
+      const apiKey = await apiKeyService.revoke(req.params.keyId, req.user!.id, req.user!.role);
       respond.success(res, apiKey, 'API key revoked');
     } catch (error) {
       next(error);
@@ -61,6 +62,7 @@ export class ApiKeyController {
         req.params.keyId,
         req.user!.id,
         expiresAt ? new Date(expiresAt) : undefined,
+        req.user!.role,
       );
 
       respond.created(res, {
@@ -75,7 +77,7 @@ export class ApiKeyController {
 
   async delete(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      await apiKeyService.delete(req.params.keyId, req.user!.id);
+      await apiKeyService.delete(req.params.keyId, req.user!.id, req.user!.role);
       respond.noContent(res);
     } catch (error) {
       next(error);
