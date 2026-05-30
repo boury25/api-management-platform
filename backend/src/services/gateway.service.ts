@@ -241,6 +241,16 @@ export class GatewayService {
     delete axiosConfig.headers?.['x-api-key'];
     delete axiosConfig.headers?.['content-length'];
 
+    // Strip conditional request headers so the upstream ALWAYS returns a full
+    // 200 response. If these are forwarded and the upstream returns 304, the
+    // browser uses whatever body it cached previously — which could be the old
+    // garbled compressed bytes from before this fix was deployed.
+    delete axiosConfig.headers?.['if-none-match'];
+    delete axiosConfig.headers?.['if-modified-since'];
+    delete axiosConfig.headers?.['if-match'];
+    delete axiosConfig.headers?.['if-unmodified-since'];
+    delete axiosConfig.headers?.['if-range'];
+
     // Force uncompressed responses from upstream.
     // Node's http module can handle gzip but not brotli natively; if we
     // forward the browser's 'accept-encoding: gzip, br' the upstream may
@@ -251,10 +261,24 @@ export class GatewayService {
     const response = await axios(axiosConfig);
     const responseTime = Date.now() - startTime;
 
+    // Headers the browser should never cache on a gateway URL — strip them so
+    // the browser can't build a conditional (If-None-Match / If-Modified-Since)
+    // request against this endpoint in the future.
+    const stripResponseHeaders = new Set([
+      'etag', 'last-modified', 'cache-control', 'expires', 'pragma',
+      // Hop-by-hop headers that must not be forwarded
+      'transfer-encoding', 'connection', 'keep-alive', 'upgrade',
+      'proxy-authenticate', 'proxy-authorization', 'te', 'trailers',
+    ]);
+
     const headers: Record<string, string> = {};
     for (const [key, value] of Object.entries(response.headers)) {
-      if (value) headers[key] = String(value);
+      if (value && !stripResponseHeaders.has(key.toLowerCase())) {
+        headers[key] = String(value);
+      }
     }
+    // Tell the browser not to cache gateway proxy responses at all
+    headers['cache-control'] = 'no-store';
 
     return {
       statusCode: response.status,
