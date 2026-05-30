@@ -11,6 +11,8 @@ const router = Router();
  * The wildcard uses Express 4.x "0 or more path segments" syntax.
  */
 // Match /:projectId with any path after it
-router.all('/:projectId/*path', gatewayController.proxy);
+// Note: Express 4 + path-to-regexp 0.1.x uses unnamed wildcard (*); the captured
+// segment is available as req.params[0] in the controller.
+router.all('/:projectId/*', gatewayController.proxy);
 
 export default router;
