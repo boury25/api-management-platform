@@ -2,12 +2,13 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search, LayoutDashboard, FolderOpen, Key, FileText, BarChart3, Server, Webhook, Shield, Settings } from 'lucide-react';
+import { Search, LayoutDashboard, FolderOpen, Key, FileText, BarChart3, Server, Webhook, Shield, Settings, FlaskConical } from 'lucide-react';
 
 const commands = [
   { name: 'Overview',      href: '/dashboard',  icon: LayoutDashboard, group: 'Navigation' },
   { name: 'Projects',      href: '/projects',   icon: FolderOpen,      group: 'Navigation' },
   { name: 'API Keys',      href: '/api-keys',   icon: Key,             group: 'Navigation' },
+  { name: 'Playground',    href: '/playground', icon: FlaskConical,    group: 'Navigation' },
   { name: 'Request Logs',  href: '/logs',       icon: FileText,        group: 'Navigation' },
   { name: 'Analytics',     href: '/analytics',  icon: BarChart3,       group: 'Navigation' },
   { name: 'Mock Server',   href: '/mocks',      icon: Server,          group: 'Navigation' },

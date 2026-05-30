@@ -17,18 +17,20 @@ import {
   LogOut,
   Zap,
   ChevronRight,
+  FlaskConical,
 } from 'lucide-react';
 
 const navigation = [
-  { name: 'Overview', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Projects', href: '/projects', icon: FolderOpen },
-  { name: 'API Keys', href: '/api-keys', icon: Key },
-  { name: 'Request Logs', href: '/logs', icon: FileText },
-  { name: 'Analytics', href: '/analytics', icon: BarChart3 },
-  { name: 'Mock Server', href: '/mocks', icon: Server },
-  { name: 'Webhooks', href: '/webhooks', icon: Webhook },
-  { name: 'OAuth Clients', href: '/oauth', icon: Shield },
-  { name: 'Settings', href: '/settings', icon: Settings },
+  { name: 'Overview',      href: '/dashboard',   icon: LayoutDashboard },
+  { name: 'Projects',      href: '/projects',    icon: FolderOpen },
+  { name: 'API Keys',      href: '/api-keys',    icon: Key },
+  { name: 'Playground',    href: '/playground',  icon: FlaskConical },
+  { name: 'Request Logs',  href: '/logs',        icon: FileText },
+  { name: 'Analytics',     href: '/analytics',   icon: BarChart3 },
+  { name: 'Mock Server',   href: '/mocks',       icon: Server },
+  { name: 'Webhooks',      href: '/webhooks',    icon: Webhook },
+  { name: 'OAuth Clients', href: '/oauth',       icon: Shield },
+  { name: 'Settings',      href: '/settings',    icon: Settings },
 ];
 
 export function Sidebar() {
