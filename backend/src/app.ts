@@ -39,7 +39,13 @@ export function createApp(): Application {
   // ─── Body Parsing ─────────────────────────────────────────────────────────────
   app.use(express.json({ limit: '10mb' }));
   app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-  app.use(compression());
+  // Skip compression for gateway proxy routes — those responses are already
+  // forwarded verbatim from the upstream, and re-compressing them can cause
+  // Vercel (or any reverse proxy in front) to strip Content-Encoding while
+  // leaving the body compressed, resulting in garbled binary data in the client.
+  app.use(compression({
+    filter: (req, _res) => !req.path.startsWith('/api/gateway'),
+  }));
 
   // ─── Request Infrastructure ───────────────────────────────────────────────────
   app.use(requestId);
